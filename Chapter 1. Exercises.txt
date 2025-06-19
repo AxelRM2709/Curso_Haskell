@@ -1,0 +1,41 @@
+Chapter 1. Exercises
+
+1.-Give another possible calculation for the result of double (double 2)
+
+double (double (double 1))
+=double (double (1+1)) {applying the firts double}
+=double (double 2)
+=double (2+2) {applying the second double}
+=double 4
+=4+4 {applying the third one}
+=8
+
+2.-Show that sum[x]=x for any number x
+sum[x] = x + sum[] {by definition}
+= x + 0 = x
+
+3.- Define a function product that produces the product of a list of numbers, and show using your definition that product[2,3,4]=24
+
+product[] = 1
+product[x:xs] = x * product[xs]
+
+product[2,3,4]= 2 * product[3,4]
+=2 * (3 * product[4])
+=2 * (3 * (4 * product[]))
+=2 * (3 * (4 * 1))
+=24
+
+4.- How should the definition of the function qsort be modified so that it produces a reverse sorted version of a list
+
+qsort[] = []
+qsort[x:xs] = qsort[xs] ++ [x]
+
+Example:
+qsort[1,2,3]= qsort[2,3] ++ [1]
+=(qsort[3] ++ [2]) ++ [1]
+=((qsort[] ++ [3]) ++ [2]) ++ [1]
+=[3,2,1]
+
+5.- What would be the effect of replacing <= by < in the original definition of qsort?
+
+Repeating list elements would be removed.
