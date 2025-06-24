@@ -1,0 +1,30 @@
+Chapter 3. Exercises
+
+1.- What are the types of the following values?
+ 
+ a) ['a','b','c'] :: [Char]
+ b) ('a','b','c') :: (Char)
+ c) [(False,'0'), (True, '1')] :: [(Bool,Char)]
+ d) ([False,True], ['0','1']) :: ([Bool],[Char])
+ e) [tail, init, reverse] :: [[a] -> [a]]
+
+2.- Write down definitions that have the following types; it does not matter what the definitions actually do as long as they are the type correct
+
+ a) bools :: [Bool] = [True, False]
+ b) nums :: [[Int]] = [[1],[2]]
+ c) add :: Int -> Int -> Int -> Int ; add x y z = x+y+z
+ d) copy :: a -> (a,a) ; copy x = (x,x) 
+ e) apply :: (a -> b) -> a -> b; apply f x = f x
+
+3.- What are the type of the following functions?
+
+ a) second xs = head (tail xs) :: [a] -> a
+ b) swap (x,y) = (y,x) :: (a,b)->(b,a)
+ c) pair x y = (x,y) :: a -> b -> (a,b)
+ d) double x = x*2 :: Num a => a -> a
+ e) palindrome xs = reverse xs == xs :: [a] -> Bool
+ f) twice f x = f (f x) :: (a -> a) -> a
+
+5.- Why is it not feasible in general function types to be instances of the Eq class? When is it feasible?
+
+Pendiente

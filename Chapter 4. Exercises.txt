@@ -1,0 +1,82 @@
+Chapter 4. Exercises
+
+1.- Using libray functions, define a function halve::[a] -> ([a],[a]) that splits an even lengthed list into two halves
+
+halve1::[a]->([a],[a])
+halve1 x= (take (length x `div`2) x, drop (length x `div`2) x)
+
+2.- Define a function third::[a] -> a that returns the third element in a list that contains at least this many elements using:
+
+third :: [a] -> a
+
+a. head and tail
+third xs = head( tail( tail xs))
+
+b. list indexing !!
+third xs = xs !! 2
+
+c. pattern matching
+third ( _:_: x :_) = x
+
+3.- Consider a function safetail::[a] -> [a] that behaves in the same way as tail except that it maps the empty list to itself rather than producing an error. Using tail and the function null::[a] -> Bool, define safetail using:
+
+safetail::[a]->[a]
+
+a. conditional expresión
+safetail xs = if null xs == True then [] else tail xs
+
+b.guarded equations
+safetail xs | null xs == True = []
+            | otherwise = tail xs
+
+c. pattern matching
+safetail (_:xs)= xs
+safetail []=[]
+
+4.- In similar way to && in section 4.4, show how the disjunction operator || can be defined in four different ways using pattern matching
+
+(||) :: Bool -> Bool -> Bool
+
+b||c | (b==c && b==False) = False
+     | otherwise = True
+
+True || b = True
+False || b = b
+-}
+
+
+_ || _ = True
+False || False = False
+-}
+
+
+True || True = True
+True || False = True
+False || True = True
+False || False = False
+
+5.- Without using any other library functions or operator, show how the meaning of the following pattern matching definition for logical conjunction && can be formalised using conditional expressions:
+
+True && True = True
+_ && _ = False
+
+b && c = if b==True then (if c==True then True else False) else False
+
+6.- Do the same for the following alternative definition, and note the difference in the number of conditional expressions that are required:
+
+True && b = b
+False && _ = False
+
+b && c = if b==True then c else False
+
+7.- Show how the meaning of the following curried function definition can be formalised in terms of lambda expressions:
+
+mult :: Int -> Int -> Int -> Int
+mult x y z = x*y*z
+
+mult = \x -> (\y -> (\z -> x*y*z))
+mult = \x -> \y -> \z -> x*y*z
+
+8.- 
+
+Pendiente
