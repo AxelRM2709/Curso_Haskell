@@ -1,0 +1,119 @@
+Chapter 8. Exercises
+
+1. In a similar manner to the function add, define a recursive multiplication function mult::Nat
+> Nat -> Nat for the recursive type of natural numbers: 
+Hint: make use of add in your definition. 
+
+mult':: Nat -> Nat -> Nat
+mult' Zero _ = Zero
+mult' _ Zero = Zero
+mult' x (Succ Zero) = x
+mult' x (Succ y) = add' x (mult' x y)
+--Alternative
+--mult' (Succ Zero) y = y
+--mult' (Succ x) y = add' (mult' x y) y
+
+2. Although not included in appendix B, the standard prelude defines 
+dataOrdering = LT | EQ | G.T. together with a function 
+compare::Ord a => a -> a -> Ordering 
+that decides if one value in an ordered type is less than (LT), equal to (EQ), or greater than (GT) 
+another value. Using this function, redefine the function occurs :: Ord a => a -> Tree a -> Bool for search trees. 
+Why is this new definition more efficient than the original version?
+
+3. Consider the following type of binary trees: 
+data Tree a = Leaf a | Node (Tree a) (Tree a) 
+Let us say that such a tree is balanced if the number of leaves in the left and right subtree of every 
+node differs by at most one, with leaves themselves being trivially balanced. Defines a function 
+balanced :: Tree a -> Bool that decides if a binary tree is balanced or not.
+Hint: first defines a function that returns the number of leaves in a tree. 
+
+countLeaves::Tree' a -> Int
+countLeaves (Leaf' x) = 1
+countLeaves (Node' l r) = countLeaves l + countLeaves r
+
+balanced :: Tree' a -> Bool
+balanced (Leaf' x) = True
+balanced (Node' l r) = (dif <= 1 ) && balanced l && balanced r 
+  where dif = abs (countLeaves l - countLeaves r) 
+
+4. Define a function balance :: [a] -> Tree a that converts a non-empty list into a balanced tree. 
+Hint: first defines a function that splits a list into two halves whose length differs by at most one. 
+
+balance:: [a] -> Tree' a
+balance [x] = Leaf' x
+balance xs = Node' (balance l) (balance r)
+ where
+    l=take (length xs `div` 2) xs
+    r=drop (length xs `div` 2) xs
+
+5. Given the type declaration 
+data Expr = Val Int | Add Expr Expr 
+defines a higher-order function 
+folde :: (Int -> a) -> (a -> a -> a) -> Expr -> a 
+such that folde f g replaces each Val constructor in an expression by the function f, and each 
+Add constructor by the function g.
+
+folde::(Int -> a) -> (a-> a-> a) -> Expr -> a
+folde f g (Val n) = f n
+folde f g (Add x y) = g (folde f g x) (folde f g y) 
+
+6. Using folde, define a function eval :: Expr -> Int that evaluates an expression to an integer 
+value, and a function size :: Expr -> Int that calculates the number of values ​​in an expression. 
+
+eval::Expr -> Int
+eval (Val n) = n
+eval (Add x y) = folde id (+) (Add x y)
+
+7. 
+
+8. Extend the tautology checker to support the use of logical disjunction (v) and the equivalence (<=>) in propositions.
+
+data Prop = Const Bool
+    | Var Char -- Variable
+    | Not Prop --Negation
+    | And Prop Prop -- Conjunction
+    | Imply Prop Prop -- Imply
+    | Dis Prop Prop -- Disjunction
+    | Bic Prop Prop -- Biconditional
+
+eval1 :: Subst -> Prop -> Bool
+eval1 _ (Const b) = b
+eval1 s (Var x) = find x s
+eval1 s (Not p) = not (eval1 s p)
+eval1 s (And p q) = eval1 s p && eval1 s q
+eval1 s (Imply p q) = eval1 s p <= eval1 s q
+eval1 s (Dis p q) = eval1 s p || eval1 s q 
+eval1 s (Bic p q) = (eval1 s p <= eval1 s q) && (eval1 s q <= eval1 s p)
+
+vars :: Prop -> [Char]
+vars (Const _) = []
+vars (Var x) = [x]
+vars (Not p) = vars p
+vars (And p q) = vars p ++ vars q
+vars (Imply p q) = vars p ++ vars q
+vars (Dis p q) = vars p ++ vars q
+vars (Bic p q) = vars p ++ vars q
+
+9.- Extend the abstract machine to support the use of mutiplication.
+
+data Expr = Val Int | Add Expr Expr | Mult Expr Expr
+
+value :: Expr -> Int
+value (Val n)    = n
+value (Add x y) = value x + value y
+value (Mult x y) = value x * value y
+
+type Cont = [Op]
+
+data Op = EVAL Expr | ADD Int | MULT Int
+
+eval :: Expr -> Cont -> Int
+eval (Val n) c = exec c n
+eval (Add x y) c = eval x (EVAL y : c)
+eval (Mult x y) c = eval x (EVAL y : c)
+
+exec :: Cont -> Int -> Int
+exec []    n = n
+exec (EVAL y : c) n = eval y (ADD n : c)
+exec (ADD n : c) m = exec c (n+m)
+exec (MULT n : c) m = exec c (n*m)

@@ -1,0 +1,86 @@
+Chapter 9. Exercises
+
+1. Redefine the combinatorial function choices using a list comprehension rather than using composition, concat and map. 
+
+choices:: [a] -> [[a]]
+choices = concat. map perms . subs 
+
+2. Define a recursive function isChoice :: Eq a => [a] -> [a] -> Bool that decides if one list 
+is chosen from another, without using the combinatorial functions perms and subs. Hint: start by 
+defining a function that removes the first occurrence of a value from a list. 
+
+inList:: Eq a => a -> [a] -> Bool --Function that verifies if a element is in a list
+inList _ [] = False
+inList y (x:xs) = (y==x) || inList y xs
+
+removeFirts:: Eq a => a -> [a] -> [a] --Function that remove the firts occurence of a value
+removeFirts y [] = []
+removeFirts y (x:xs) | y==x = xs
+                     | otherwise = x : removeFirts y xs  
+
+isChoice:: Eq a => [a] -> [a] -> Bool
+isChoice [] _ = True
+isChoice xs [] = False
+isChoice (y:ys) xs | inList y xs = isChoice ys (removeFirts y xs) 
+                   | otherwise = False
+
+3. What effect would generalizing the split function to also return pairs containing the empty list 
+have on the behavior of solutions?
+ 
+4. Using the functions choices, exprs, and eval, verify that there are 33,665,406 possible 
+expressions over the numbers 1, 3, 7, 10, 25, 50, and that only 4,672,540 of these expressions 
+evaluate successfully. 
+
+It is correct.
+
+5. Similarly, verify that the number of expressions that evaluate successfully increases to 10,839,369 
+if the numerical domain is generalized to arbitrary integers. Hint: modify the definition of valid. 
+
+valid :: Op -> Int -> Int -> Bool
+valid Add' _ _ = True
+valid Sub _ _ = True -- It allows all subtractions
+valid Mul _ _ = True
+valid Div x y = x `mod` y == 0 && y/=0
+valid Exp _ y = y >= 0 -- Only exponents non negative
+
+6. Modify the final program to: 
+to. allow the use of exponentiation in expressions; 
+b. produces the nearest solutions if no exact solution is possible; 
+c. order the solutions using a suitable measure of simplicity.
+
+data Op = Add' | Sub | Mul | Div  | Exp
+instance Show Op where
+  show Add' = "+"
+  show Sub = "-"
+  show Mul= "*"
+  show Div = "/"
+  show Exp = "^"
+
+valid :: Op -> Int -> Int -> Bool
+valid Add' _ _ = True
+valid Sub _ _ = True
+valid Mul _ _ = True
+valid Div x y = x `mod` y == 0 && y/=0
+valid Exp _ y = y >= 0 -- Only exponents non negative
+
+apply :: Op -> Int -> Int -> Int
+apply Add' x y = x + y
+apply Sub x y = x - y
+apply Mul x y = x * y
+apply Div x y = x `div` y
+apply Exp x y = x ^ y
+
+ops :: [Op]
+ops = [Add', Sub, Mul, Div, Exp] 
+
+noSol::Int -> [Int] -> (Int,Int,Int) -- All, Solutions, Nearest solution
+noSol n ns = foldr count (0, 0, n) [e | ns' <- choices ns, e <- exprs ns']
+  where
+    count e (p, r, h) = (p+1, if eval' e == [n] then r + 1 else r, if abs(l2I (eval' e) - l2I [n])<h then l2I (eval' e)  else h )
+{-
+noSol _ [] = (0,0)
+noSol n ns = (length p, length r )
+ where
+  p = [e | ns' <- choices ns, e <- exprs ns']
+  r = [y | y <- p, eval' y == [n]]
+-}

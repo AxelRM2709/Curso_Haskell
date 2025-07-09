@@ -1,0 +1,99 @@
+Chapter 7. Exercises
+
+1.- Show how the list comprehension [f x | x<-xs, p x] can be re-expressed using the higher-order functions map and filter.
+
+map f (filter p xs)
+
+2.- Without looking at the definitions from the standard prelude, define the following higher-order library functions on lists.
+
+a) Decide if all elements of a list satisfy a predicate:
+
+all'::(a-> Bool) -> [a] -> Bool
+all' p = foldr ((&&).p) True
+--all' p xs= foldr (&&) True (map p xs)
+
+b) Decide if any element of the lis satifies a predicate:
+
+any'::(a->Bool) -> [a] -> Bool
+any' p = foldr ((||).p) False
+--any' p xs= foldr (||) False (map p xs)
+
+c) Select elements from a list while the satisfy a predicate:
+
+takewhile'::(a->Bool) -> [a] -> [a]
+takewhile' _ [] = []
+takewhile' p (x:xs) | p x = x : takewhile' p xs
+                    | otherwise = []
+
+d) Remove elements from a list while they satisfy a predicate:
+
+dropwhile'::(a->Bool) -> [a] -> [a]
+dropwhile' _ [] = []
+dropwhile' p (x:xs) | p x = dropwhile' p xs
+                    | otherwise = x:xs
+
+3.- Redefine the functions map f and filter p using foldr.
+
+map':: (a->b) -> [a] -> [b]
+map' f= foldr (\x xs -> f x:xs) []
+
+filter'::(a->Bool) -> [a] -> [a]
+filter' p = foldr (\x xs -> if p x then x:xs else xs) []
+
+4.- Using foldl, define a function dec2int::[Int] -> Int taht converts a decimal number into an integer.
+
+dec2int::[Int] -> Int
+dec2int = foldl (\acc x -> x + acc*10) 0
+
+5.- Without looking at the definitions from the standard prelude, define the high-order library function curry that converts
+a function on pair into a curried function, and, conversely, the function uncurry.
+
+curry' :: ((a,b) -> c) -> a -> b -> c -- curry takes a function f (x,y)
+curry' f x y = f(x,y)
+
+uncurry' :: (a -> b -> c) -> (a,b) -> c -- uncurry takes a function f x y
+uncurry' f (x,y) = f x y 
+
+6.-
+
+7.- Modify the binary string transmitter example to detect simple transmission errors using the concept 
+of parity bits. That is, each eight-bit binary number produced during encoding is extended with a 
+parity bit, set to one if the number contains an odd number of ones, and to zero otherwise. In turn, 
+each resulting nine-bit binary number consumed during decoding is checked to ensure that its parity 
+bit is correct, with the parity bit being discarded if this is the case, and a parity error being 
+reported otherwise.
+
+parity::[Bit] -> Bit
+--parity xs = if odd (length(filter (==1) xs)) then 1 else 0
+parity xs = if odd (foldl(\x acc-> if x==1 then acc+1 else acc) 0 xs) then 1 else 0
+
+bitParity:: [Bit] -> [Bit]
+bitParity xs = xs ++ [parity xs] 
+
+verifyBit:: [Bit] -> Bool
+verifyBit xs = parity (init xs) == last xs
+
+8. Test your new string transmitter program from the previous exercise using a faulty communication 
+channel that forgets the first bit, which can be modeled using the tail function on lists of bits. 
+
+We can use the previous function
+verifyBit:: [Bit] -> Bool
+verifyBit xs = parity (init xs) == last xs
+
+9. Define a function altMap :: (a -> b) -> (a -> b) -> [a] -> [b] that alternately applies 
+its two argument functions to successive elements in a list, in turn about order. 
+
+altmap::(a->b) -> (a->b) -> [a] -> [b]
+altmap _ _ [] = []
+--altmap f g (x:xs) = f x : altmap g f xs
+altmap f g (x:xs) = if odd (length xs + 1) then f x : altmap f g xs else g x : altmap f g xs
+
+10. Using altMap, define a function luhn::[Int] -> Bool that implements the Luhn algorithm 
+from the exercises in chapter 4 for bank card numbers of any length. Test your new function using your own bank card.
+
+luhndouble:: Int -> Int
+luhndouble x = if 2*x>9 then (2*x)-9 else 2*x
+
+luhn::[Int] -> Bool
+luhn xs | even(length xs) = (sum (altmap (*1) luhndouble  xs) `mod` 10) == 0
+        | otherwise = (sum (altmap luhndouble (*1) xs) `mod` 10) == 0
