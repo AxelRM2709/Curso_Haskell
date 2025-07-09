@@ -77,6 +77,29 @@ mult x y z = x*y*z
 mult = \x -> (\y -> (\z -> x*y*z))
 mult = \x -> \y -> \z -> x*y*z
 
-8.- 
+8.- The Luhn algorithm is used to check bank card numbers for simple errors such as mistyping a 
+digit, and proceeds as follows: 
+consider each digit as a separate number; 
+moving left, double every other number from the second last; 
+subtract 9 from each number that is now greater than 9; 
+add all the resulting numbers together; 
+if the total is divisible by 10, the card number is valid.
 
-Pendiente
+luhndouble:: Int -> Int
+luhndouble x = if 2*x>9 then (2*x)-9 else 2*x
+
+luhn:: Int -> Int -> Int -> Int -> Bool
+luhn a b c d = (luhndouble a + b + luhndouble c + d) `mod` 10 == 0 
+
+--Attempt at a general version
+pares::Num a=>[a] -> [a]
+pares [] =[]
+pares xs = [x | (x,y) <- zip xs [0..(length xs - 1)] , y `mod` 2 == 0]
+
+luhnG :: [Int] -> Bool
+luhnG [] = False
+luhnG xs = ((a+b) `mod` 10) ==0
+     where
+      a=sum [luhndouble x | x<-(pares xs)]
+      b=sum (impares xs)
+--luhnG xs = ((sum [luhndouble y | y <- take (length xs - 1) xs] + last xs) `mod` 10) == 0
