@@ -29,13 +29,12 @@ pyths n = [(x,y,z) | x<-[1..n], y<-[1..n], z<-[1..n], x^2+y^2==z^2]
 
 6.- A positive integer is perfect if it equals the sum of all of its factors, excluding the number itself. Using list comprehension and the function factors, define a function perfects:: Int -> [Int] that returns the list of all perfect numbers up to a given limit.
 
-
 perfects:: Int -> [Int]
 perfects n = [x | x<-[1..n], sum (factores x) == 2*x ]
 
 7.- Show how the list comprehension [(x,y) | x <- [1,2], y <- [3,4]] with two generators can be re-expressed using two comprehensions with single generator.
 
-Pendiente
+concat [ [(x,3)| x<-[1,2]], [(x,4) | x <-[1,2]] ]
 
 8.- Redifine the function positions using the function find.
 
@@ -67,5 +66,3 @@ shift n c | isLower c = itl ((lti c +n) `mod` 26)
     
 encode::Int->String->String
 encode n xs = [shift n x | x<- xs]
-
-
