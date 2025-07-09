@@ -27,4 +27,4 @@ Chapter 3. Exercises
 
 5.- Why is it not feasible in general function types to be instances of the Eq class? When is it feasible?
 
-Pendiente
+Two functions are considered equal if they return the same results for the same arguments, so we have to test all the possibles arguments. It would be possible for constant functions or whom have enumerable arguments.
