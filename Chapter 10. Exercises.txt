@@ -1,0 +1,60 @@
+Chapter 10. Exercises
+
+1. Redefine putStr :: String -> IO () using a list comprehension and the library function sequence_ :: [IO a] -> IO ().
+
+pStr:: String -> IO()
+pStr xs = sequence_[putChar x | x<-xs]
+
+2. Using recursion, define a version of putBoard :: Board -> IO () that displays boards of any size, rather than being specific to boards with just five rows of stars. Hint: First define an auxiliary function that takes the current row number as an additional argument.
+
+putBoard :: Board -> IO()
+putBoard [] = return ()
+putBoard (x:xs) = do
+                   putRow x (length xs+1) -- Add one to remove the first element x but keep the initial length
+                   putBoard xs            -- Make a row x:... with the length of (x:xs)
+
+3. In a similar manner to the first exercise, redefine the generalized version of putBoard using a list comprehension and sequence_.
+
+putBoard2:: Board -> IO()
+putBoard2 xs = sequence_[putRow y n | (y,n) <- zip xs (reverse[1..(length xs)])]
+-- Makes rows with xs and [length xs, ... , 1]
+
+4. Define an action adder :: IO () that reads a given number of integers from the keyboard, one per line, and displays their sum.
+
+adder::IO()
+adder= do
+    putStr "How many numbers? "
+    n <- getDigit ""
+    numeros <- pedirnum n 1
+    putStrLn ("The sum is " ++ show(sum numeros))
+
+pedirnum:: Int -> Int -> IO [Int] --Function that scans numbers acting like a cycle
+pedirnum 0 _ = return [] 
+pedirnum n m = do 
+    putStr ("Number " ++ show m ++ ":") --Prints "Number x :"
+    num <- getDigit ""                  --Scan the number
+    nums <- pedirnum (n-1) (m+1)        
+    return (num:nums)
+
+5. Redefine adder using the function sequence :: [IO a] -> IO [a], which performs a list of actions and returns a list of the resulting values.
+
+adder2::IO ()
+adder2 = do
+    putStr "How many numbers? "
+    n <- getDigit ""
+    s <- sequence [getDigit "" | y <- [1..n]]
+    putStrLn ("The total is " ++ show (sum s))
+
+6. Using getCh, define an action readLine :: IO String that behaves like getLine, but also allows the delete key to remove characters
+
+readline :: IO String
+readline = do 
+            x <- getCh
+            if x=='\n' then do
+                return []
+            else if x == '\DEL' then do
+                xs <- readline
+                return xs
+            else do 
+                xs <- readline
+                return (x:xs)
